@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <!-- Ảnh nền toàn màn hình -->
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:src="@drawable/metro_background_3"
+        android:contentDescription="Background"
+        android:alpha="0.6" /> <!-- Làm mờ nhẹ để dễ đọc nội dung phía trên -->
+
+    <!-- Nội dung chính -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:padding="24dp">
+
+        <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Chọn loại vé"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="24dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+            <Button
+                android:id="@+id/btnVeLuot"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vé lượt - 9.000đ" />
+
+            <Button
+                android:id="@+id/btnVeNgay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vé ngày - 40.000đ"
+                android:layout_marginTop="12dp" />
+
+            <Button
+                android:id="@+id/btnVeTuan"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vé 3 ngày - 90.000đ"
+                android:layout_marginTop="12dp" />
+
+            <Button
+                android:id="@+id/btnVeThang"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Vé tháng - 300.000đ"
+                android:layout_marginTop="12dp" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</FrameLayout>
