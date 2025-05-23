@@ -37,7 +37,8 @@ public class MainActivity extends AppCompatActivity {
         });
 
         btnMyTicket.setOnClickListener(v -> {
-            // TODO: Chuyển đến màn hình vé của tôi
+            Intent intent = new Intent(MainActivity.this, MyTicketsActivity.class);
+            startActivity(intent);
         });
 
         btnExchangeQR.setOnClickListener(v -> {

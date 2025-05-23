@@ -36,7 +36,7 @@
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".EditProfileActivity" />
         <activity android:name=".ChangePasswordActivity" />
-
+        <activity android:name=".MyTicketsActivity" />
 
     </application>
 </manifest>

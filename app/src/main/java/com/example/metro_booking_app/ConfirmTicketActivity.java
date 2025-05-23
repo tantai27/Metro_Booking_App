@@ -94,9 +94,11 @@ public class ConfirmTicketActivity extends AppCompatActivity {
         });
 
         btnConfirm.setOnClickListener(v -> {
-            saveTicketToDatabase();
-            Toast.makeText(this, "Đặt vé thành công!", Toast.LENGTH_LONG).show();
-            finish();
+            long ticketId = saveTicketToDatabase(); // Lưu và lấy ID
+            Intent nextIntent = new Intent(ConfirmTicketActivity.this, PaymentActivity.class);
+            nextIntent.putExtra("ticket_id", ticketId);
+            nextIntent.putExtra("ticket_type", ticketType); // Gửi sang PaymentActivity
+            startActivity(nextIntent);
         });
     }
 
@@ -148,7 +150,7 @@ public class ConfirmTicketActivity extends AppCompatActivity {
         }, y, m, d).show();
     }
 
-    private void saveTicketToDatabase() {
+    private long saveTicketToDatabase() {
         MyDataBaseHelper dbHelper = new MyDataBaseHelper(this);
         ContentValues values = new ContentValues();
 
@@ -160,13 +162,17 @@ public class ConfirmTicketActivity extends AppCompatActivity {
         values.put("valid_until", endDateStr);
         values.put("user_id", userId);
 
-        SQLiteDatabase db = dbHelper.getWritableDatabase();
-        db.insert("Tickets", null, values);
-        db.close();
+        // Nếu là vé lượt thì thêm thêm các trường
         if (ticketType.equals("Vé lượt")) {
             values.put("from_station", from);
             values.put("to_station", to);
             values.put("travel_date", date);
         }
+
+        SQLiteDatabase db = dbHelper.getWritableDatabase();
+        long ticketId = db.insert("Tickets", null, values); // Trả về ID
+        db.close();
+
+        return ticketId;
     }
 }
