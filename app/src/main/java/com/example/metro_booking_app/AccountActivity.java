@@ -44,7 +44,12 @@ public class AccountActivity extends AppCompatActivity {
         // Hiển thị thông tin
         loadUserInfo();
 
-        btnBack.setOnClickListener(v -> finish());
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(AccountActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            finish();
+        });
 
         btnEditProfile.setOnClickListener(v -> {
             Intent intent = new Intent(AccountActivity.this, EditProfileActivity.class);

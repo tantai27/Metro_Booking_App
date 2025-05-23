@@ -1,0 +1,337 @@
+// 1️⃣ Student.java (Model)
+public class Student {
+    private int id;
+    private String avatar;
+    private String name;
+    private String studentId;
+    private String cccd;
+    private String dob;
+    private String major;
+    private String phone;
+
+    public Student(int id, String avatar, String name, String studentId, String cccd, String dob, String major, String phone) {
+        this.id = id;
+        this.avatar = avatar;
+        this.name = name;
+        this.studentId = studentId;
+        this.cccd = cccd;
+        this.dob = dob;
+        this.major = major;
+        this.phone = phone;
+    }
+
+    // Getters and Setters...
+}
+
+// 2️⃣ SQLiteHelper.java
+public class SQLiteHelper extends SQLiteOpenHelper {
+    private static final String DB_NAME = "StudentDB.db";
+    private static final int DB_VERSION = 1;
+
+    public SQLiteHelper(Context context) {
+        super(context, DB_NAME, null, DB_VERSION);
+    }
+
+    @Override
+    public void onCreate(SQLiteDatabase db) {
+        String sql = "CREATE TABLE Student (" +
+                "id INTEGER PRIMARY KEY AUTOINCREMENT," +
+                "avatar TEXT," +
+                "name TEXT," +
+                "studentId TEXT," +
+                "cccd TEXT," +
+                "dob TEXT," +
+                "major TEXT," +
+                "phone TEXT)";
+        db.execSQL(sql);
+
+        // Insert 10 dummy students
+        for (int i = 1; i <= 10; i++) {
+            String insert = "INSERT INTO Student (avatar, name, studentId, cccd, dob, major, phone) VALUES (" +
+                    "'' , 'Student " + i + "', 'SV" + (1000 + i) + "', '123456789" + i + "', '2000-01-0" + i + "', 'IT', '012345678" + i + "')";
+            db.execSQL(insert);
+        }
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        db.execSQL("DROP TABLE IF EXISTS Student");
+        onCreate(db);
+    }
+
+    // CRUD methods
+    public List<Student> getAllStudents() { /* ... */ }
+    public Student getStudentById(int id) { /* ... */ }
+    public void addStudent(Student s) { /* ... */ }
+    public void updateStudent(Student s) { /* ... */ }
+    public void deleteStudent(int id) { /* ... */ }
+}
+
+// 3️⃣ list_item_student.xml
+// <LinearLayout ...>
+//     <ImageView android:id="@+id/imgAvatar" ... />
+//     <TextView android:id="@+id/tvName" ... />
+// </LinearLayout>
+
+// 4️⃣ MainActivity.java
+public class MainActivity extends AppCompatActivity {
+    ListView listView;
+    FloatingActionButton btnAdd;
+    List<Student> list;
+    StudentAdapter adapter;
+    SQLiteHelper db;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        listView = findViewById(R.id.listView);
+        btnAdd = findViewById(R.id.btnAdd);
+        db = new SQLiteHelper(this);
+
+        loadData();
+
+        btnAdd.setOnClickListener(v -> {
+            Intent intent = new Intent(MainActivity.this, StudentDetailActivity.class);
+            startActivity(intent);
+        });
+
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            Student s = list.get(position);
+            Intent intent = new Intent(MainActivity.this, StudentDetailActivity.class);
+            intent.putExtra("id", s.getId());
+            startActivity(intent);
+        });
+    }
+
+    private void loadData() {
+        list = db.getAllStudents();
+        adapter = new StudentAdapter(this, list);
+        listView.setAdapter(adapter);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        loadData();
+    }
+}
+
+// 5️⃣ StudentAdapter.java
+public class StudentAdapter extends BaseAdapter {
+    private Context context;
+    private List<Student> list;
+
+    public StudentAdapter(Context context, List<Student> list) {
+        this.context = context;
+        this.list = list;
+    }
+
+    @Override
+    public int getCount() { return list.size(); }
+    @Override
+    public Object getItem(int position) { return list.get(position); }
+    @Override
+    public long getItemId(int position) { return list.get(position).getId(); }
+
+    @Override
+    public View getView(int position, View convertView, ViewGroup parent) {
+        if (convertView == null) {
+            convertView = LayoutInflater.from(context).inflate(R.layout.list_item_student, parent, false);
+        }
+        ImageView img = convertView.findViewById(R.id.imgAvatar);
+        TextView name = convertView.findViewById(R.id.tvName);
+        Student s = list.get(position);
+        name.setText(s.getName());
+        img.setImageResource(R.drawable.ic_placeholder); // placeholder
+        return convertView;
+    }
+}
+
+// 6️⃣ StudentDetailActivity.java
+public class StudentDetailActivity extends AppCompatActivity {
+    EditText edName, edStudentId, edCCCD, edDOB, edMajor, edPhone;
+    Button btnSave, btnDelete;
+    ImageView imgAvatar;
+    SQLiteHelper db;
+    int id = 0;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_student_detail);
+
+        edName = findViewById(R.id.edName);
+        edStudentId = findViewById(R.id.edStudentId);
+        edCCCD = findViewById(R.id.edCCCD);
+        edDOB = findViewById(R.id.edDOB);
+        edMajor = findViewById(R.id.edMajor);
+        edPhone = findViewById(R.id.edPhone);
+        imgAvatar = findViewById(R.id.imgAvatar);
+        btnSave = findViewById(R.id.btnSave);
+        btnDelete = findViewById(R.id.btnDelete);
+
+        db = new SQLiteHelper(this);
+
+        Intent intent = getIntent();
+        id = intent.getIntExtra("id", 0);
+        if (id != 0) {
+            Student s = db.getStudentById(id);
+            edName.setText(s.getName());
+            edStudentId.setText(s.getStudentId());
+            edCCCD.setText(s.getCccd());
+            edDOB.setText(s.getDob());
+            edMajor.setText(s.getMajor());
+            edPhone.setText(s.getPhone());
+        } else {
+            btnDelete.setVisibility(View.GONE);
+        }
+
+        btnSave.setOnClickListener(v -> {
+            Student s = new Student(id,
+                    "",
+                    edName.getText().toString(),
+                    edStudentId.getText().toString(),
+                    edCCCD.getText().toString(),
+                    edDOB.getText().toString(),
+                    edMajor.getText().toString(),
+                    edPhone.getText().toString());
+            if (id == 0) db.addStudent(s); else db.updateStudent(s);
+            finish();
+        });
+
+        btnDelete.setOnClickListener(v -> {
+            db.deleteStudent(id);
+            finish();
+        });
+    }
+}
+
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
+// 📄 res/layout/activity_main.xml
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <ListView
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/btnAdd"/>
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btnAdd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_margin="16dp"
+        android:contentDescription="Add"
+        app:srcCompat="@android:drawable/ic_input_add" />
+
+</RelativeLayout>
+
+// 📄 res/layout/list_item_student.xml
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="10dp">
+
+    <ImageView
+        android:id="@+id/imgAvatar"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/ic_placeholder"
+        android:layout_marginEnd="16dp" />
+
+    <TextView
+        android:id="@+id/tvName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="18sp"
+        android:textColor="#000"
+        android:gravity="center_vertical"/>
+
+</LinearLayout>
+
+// 📄 res/layout/activity_student_detail.xml
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/imgAvatar"
+            android:layout_width="100dp"
+            android:layout_height="100dp"
+            android:layout_gravity="center_horizontal"
+            android:src="@drawable/ic_placeholder"
+            android:layout_marginBottom="16dp" />
+
+        <EditText
+            android:id="@+id/edName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Tên sinh viên" />
+
+        <EditText
+            android:id="@+id/edStudentId"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Mã sinh viên" />
+
+        <EditText
+            android:id="@+id/edCCCD"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số CCCD" />
+
+        <EditText
+            android:id="@+id/edDOB"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Ngày sinh" />
+
+        <EditText
+            android:id="@+id/edMajor"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Chuyên ngành" />
+
+        <EditText
+            android:id="@+id/edPhone"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Số điện thoại" />
+
+        <Button
+            android:id="@+id/btnSave"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Lưu"
+            android:layout_marginTop="16dp" />
+
+        <Button
+            android:id="@+id/btnDelete"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Xóa"
+            android:layout_marginTop="8dp" />
+
+    </LinearLayout>
+
+</ScrollView>

@@ -55,8 +55,14 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
         // Tạo bảng Tickets
         db.execSQL("CREATE TABLE Tickets (" +
                 "id INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                "ticket_type TEXT, price REAL, valid_from DATE, " +
-                "valid_until DATE, user_id INTEGER, " +
+                "ticket_type TEXT, " +
+                "price REAL, " +
+                "valid_from TEXT, " +
+                "valid_until TEXT, " +
+                "from_station TEXT, " +
+                "to_station TEXT, " +
+                "travel_date TEXT, " +
+                "user_id INTEGER, " +
                 "FOREIGN KEY(user_id) REFERENCES Users(id))");
     }
 
@@ -284,4 +290,17 @@ public class MyDataBaseHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+    // Lấy mật khẩu theo email
+    public String getPasswordByEmail(String email) {
+        SQLiteDatabase db = this.getReadableDatabase();
+        String password = null;
+        Cursor cursor = db.rawQuery("SELECT password FROM Users WHERE email = ?", new String[]{email});
+        if (cursor != null) {
+            if (cursor.moveToFirst()) {
+                password = cursor.getString(cursor.getColumnIndexOrThrow("password"));
+            }
+            cursor.close();
+        }
+        return password;
+    }
 }

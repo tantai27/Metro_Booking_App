@@ -23,6 +23,19 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+            <!-- Nút mũi tên quay lại -->
+            <ImageView
+                android:id="@+id/btnBack"
+                android:layout_width="28dp"
+                android:layout_height="48dp"
+                android:src="@drawable/ic_arrow_back"
+                android:layout_gravity="start"
+                android:layout_marginBottom="16dp"
+                android:contentDescription="Quay lại"
+                android:clickable="true"
+                android:paddingBottom="20dp"
+                android:focusable="true" />
+
             <TextView
                 android:text="Chọn loại vé"
                 android:textSize="22sp"

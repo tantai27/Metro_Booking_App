@@ -1,59 +1,169 @@
-<?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:background="#1C1C1C">
 
-    <LinearLayout
-        android:orientation="vertical"
-        android:padding="24dp"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+    <!-- Thẻ vé -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/ticketCard"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="4dp"
+        android:layout_margin="32dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <TextView
-            android:id="@+id/txtTicketInfo"
-            android:text="Thông tin vé"
-            android:textSize="16sp"
-            android:layout_marginBottom="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <TextView
-            android:text="Chọn ngày bắt đầu"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"/>
+        <!-- Nội dung vé -->
         <LinearLayout
-            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="24dp">
 
-            <TextView
-                android:id="@+id/txtStartDate"
-                android:text="Chưa chọn ngày"
-                android:layout_weight="1"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:padding="8dp" />
-
+            <!-- Nút quay lại -->
             <ImageView
-                android:id="@+id/btnPickStartDate"
-                android:src="@android:drawable/ic_menu_my_calendar"
+                android:id="@+id/btnBack"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_gravity="left"
+                android:contentDescription="Quay lại"
+                android:src="@drawable/ic_arrow_back" />
+
+            <!-- Logo -->
+            <ImageView
+                android:layout_width="100dp"
+                android:layout_height="100dp"
+                android:layout_marginTop="8dp"
+                android:layout_marginBottom="8dp"
+                android:src="@drawable/tk_logo" />
+
+            <!-- Tên vé -->
+            <TextView
+                android:id="@+id/txtTicketInfo"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="8dp" />
+                android:layout_marginBottom="16dp"
+                android:text="Vé 1 ngày"
+                android:textColor="#000000"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <!-- Chi tiết vé -->
+            <TextView
+                android:id="@+id/txtLoaiVe"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="Loại vé: Vé 1 ngày"
+                android:textColor="#000080" />
+
+            <TextView
+                android:id="@+id/txtHSD"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="4dp"
+                android:text="HSD: 24h kể từ thời điểm kích hoạt"
+                android:textColor="#000080" />
+
+            <!-- Hiển thị ngày bắt đầu -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/txtStartDate"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:paddingLeft="50dp"
+                    android:paddingTop="12dp"
+                    android:text="Ngày bắt đầu: "
+                    android:textColor="#006400"
+                    android:textSize="16sp" />
+
+                <ImageView
+                    android:id="@+id/btnPickDate"
+                    android:layout_width="46dp"
+                    android:layout_height="46dp"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_calendar" />
+            </LinearLayout>
+
+            <!-- Hiển thị ngày kết thúc -->
+            <TextView
+                android:id="@+id/txtEndDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="left"
+                android:layout_marginBottom="8dp"
+                android:paddingLeft="50dp"
+                android:text="Ngày kết thúc: "
+                android:textColor="#006400"
+                android:textSize="16sp" />
+
+            <!-- Lưu ý -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Lưu ý: Tự động kích hoạt sau 30 ngày kể từ ngày mua vé"
+                android:textColor="#FF0000" />
+
+            <!-- Nút mua -->
+            <Button
+                android:id="@+id/btnConfirm"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="36dp"
+                android:backgroundTint="#01579B"
+                android:text="MUA NGAY: 40.000 ₫"
+                android:textColor="#FFFFFF" />
         </LinearLayout>
+    </androidx.cardview.widget.CardView>
 
-        <TextView
-            android:id="@+id/txtEndDate"
-            android:text="Ngày kết thúc: "
-            android:layout_marginTop="16dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
+    <!-- Notch trái -->
+    <View
+        android:id="@+id/notchLeft"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/notch_circle"
+        android:layout_marginStart="-22dp"
+        android:elevation="10dp"
+        app:layout_constraintStart_toStartOf="@+id/ticketCard"
+        app:layout_constraintTop_toTopOf="@+id/ticketCard"
+        app:layout_constraintBottom_toBottomOf="@+id/ticketCard"
+        app:layout_constraintVertical_bias="0.85" />
 
-        <Button
-            android:id="@+id/btnConfirm"
-            android:text="Xác nhận &amp; Thanh toán"
-            android:layout_marginTop="24dp"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-    </LinearLayout>
-</ScrollView>
+    <!-- Notch phải -->
+    <View
+        android:id="@+id/notchRight"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:background="@drawable/notch_circle"
+        android:layout_marginEnd="-22dp"
+        android:elevation="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/ticketCard"
+        app:layout_constraintTop_toTopOf="@+id/ticketCard"
+        app:layout_constraintBottom_toBottomOf="@+id/ticketCard"
+        app:layout_constraintVertical_bias="0.85" />
+
+    <!-- Đường nét đứt giữa hai notch -->
+    <View
+        android:id="@+id/dashedDivider"
+        android:layout_width="0dp"
+        android:layout_height="3dp"
+        android:background="@drawable/cross2"
+        android:elevation="15dp"
+        app:layout_constraintTop_toTopOf="@+id/notchLeft"
+        app:layout_constraintBottom_toBottomOf="@+id/notchLeft"
+        app:layout_constraintStart_toEndOf="@+id/notchLeft"
+        app:layout_constraintEnd_toStartOf="@+id/notchRight"
+        app:layout_constraintVertical_bias="0.5" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

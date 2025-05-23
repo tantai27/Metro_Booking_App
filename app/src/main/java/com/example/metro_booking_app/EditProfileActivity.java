@@ -65,8 +65,17 @@ public class EditProfileActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> updateProfile());
 
         btnChangePassword.setOnClickListener(v -> {
-            Toast.makeText(this, "Chức năng đang phát triển", Toast.LENGTH_SHORT).show();
+            String email = getIntent().getStringExtra("username");
+
+            if (email != null && !email.isEmpty()) {
+                Intent intent = new Intent(EditProfileActivity.this, ChangePasswordActivity.class);
+                intent.putExtra("username", email);
+                startActivity(intent);
+            } else {
+                Toast.makeText(EditProfileActivity.this, "Không tìm thấy thông tin người dùng", Toast.LENGTH_SHORT).show();
+            }
         });
+
 
         btnDeleteAccount.setOnClickListener(v -> confirmDeleteAccount());
     }

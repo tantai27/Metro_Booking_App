@@ -20,7 +20,7 @@ public class SelectRouteActivity extends AppCompatActivity {
 
     Spinner spinnerFrom, spinnerTo;
     TextView txtDate;
-    ImageView btnPickDate;
+    ImageView btnPickDate, btnBack;
     Button btnContinue;
 
     String[] stations = {
@@ -42,6 +42,7 @@ public class SelectRouteActivity extends AppCompatActivity {
         txtDate = findViewById(R.id.txtDate);
         btnPickDate = findViewById(R.id.btnPickDate);
         btnContinue = findViewById(R.id.btnContinue);
+        btnBack = findViewById(R.id.btnBack); // Thêm tham chiếu btnBack
 
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item, stations);
         spinnerFrom.setAdapter(adapter);
@@ -65,12 +66,19 @@ public class SelectRouteActivity extends AppCompatActivity {
 
             // Chuyển sang giao diện xác nhận thanh toán
             Intent intent = new Intent(this, ConfirmTicketActivity.class);
-            intent.putExtra("ticketType", "Vé lượt");
+            intent.putExtra("ticketType", getIntent().getStringExtra("ticketType"));
+            intent.putExtra("price", getIntent().getDoubleExtra("price", 0));
             intent.putExtra("from", from);
             intent.putExtra("to", to);
             intent.putExtra("date", selectedDate);
-            intent.putExtra("price", 9000);
             startActivity(intent);
+        });
+
+        // Xử lý nút quay lại
+        btnBack.setOnClickListener(v -> {
+            Intent intent = new Intent(this, SelectTicketTypeActivity.class);
+            startActivity(intent);
+            finish();  // Kết thúc activity hiện tại để tránh stack chồng
         });
     }
 
@@ -86,7 +94,6 @@ public class SelectRouteActivity extends AppCompatActivity {
 
             // Sinh 200 chuyến metro cho ngày được chọn
             generateRandomTripsForDate(selectedDate);
-            //Toast.makeText(this, "Đã tạo 200 chuyến cho ngày " + selectedDate, Toast.LENGTH_SHORT).show();
 
         }, year, month, day);
         dp.show();

@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,13 +19,12 @@ import java.util.Locale;
 
 public class ConfirmTicketActivity extends AppCompatActivity {
 
-    TextView txtTicketInfo, txtStartDate, txtEndDate;
-    ImageView btnPickStartDate;
-    Button btnConfirm;
+    TextView txtTicketInfo, txtStartDate, txtEndDate, txtLoaiVeText, txtHSD;
 
+    ImageView btnPickStartDate, btnBack;
+    Button btnConfirm;
     String ticketType, from, to, date;
     double price;
-
     String startDateStr = "", endDateStr = "";
 
     @Override
@@ -35,39 +35,68 @@ public class ConfirmTicketActivity extends AppCompatActivity {
         txtTicketInfo = findViewById(R.id.txtTicketInfo);
         txtStartDate = findViewById(R.id.txtStartDate);
         txtEndDate = findViewById(R.id.txtEndDate);
-        btnPickStartDate = findViewById(R.id.btnPickStartDate);
         btnConfirm = findViewById(R.id.btnConfirm);
+        btnBack = findViewById(R.id.btnBack);
+        btnPickStartDate = findViewById(R.id.btnPickDate);
+        TextView txtLoaiVe = findViewById(R.id.txtLoaiVe);
+        txtHSD = findViewById(R.id.txtHSD);
+
+        View notchLeft = findViewById(R.id.notchLeft);
+        View notchRight = findViewById(R.id.notchRight);
+        notchLeft.bringToFront();
+        notchRight.bringToFront();
 
         Intent intent = getIntent();
         ticketType = intent.getStringExtra("ticketType");
         price = intent.getDoubleExtra("price", 0);
+        btnConfirm.setText("MUA NGAY: " + (int) price + " ₫");
 
         if (ticketType.equals("Vé lượt")) {
             from = intent.getStringExtra("from");
             to = intent.getStringExtra("to");
             date = intent.getStringExtra("date");
 
+            txtTicketInfo.setVisibility(View.VISIBLE);
+            txtLoaiVe.setVisibility(View.GONE);
+            txtHSD.setVisibility(View.GONE);
+
             txtTicketInfo.setText("Loại vé: " + ticketType + "\n"
                     + "Từ: " + from + "\nĐến: " + to + "\nNgày: " + date + "\nGiá: " + price + "đ");
-            txtStartDate.setText(date);  // Vé lượt dùng ngày đã chọn trước
-            btnPickStartDate.setEnabled(false); // Không cho chọn lại
+
+            startDateStr = date;
+            endDateStr = date;
+            txtStartDate.setText("Bắt đầu: " + startDateStr);
+            txtEndDate.setText("Kết thúc: " + endDateStr);
+            btnPickStartDate.setEnabled(false);
         } else {
-            txtTicketInfo.setText("Loại vé: " + ticketType + "\nGiá: " + price + "đ");
+            txtTicketInfo.setVisibility(View.GONE);
+            txtLoaiVe.setVisibility(View.VISIBLE);
+            txtHSD.setVisibility(View.VISIBLE);
+
+            txtLoaiVe.setText("Loại vé: " + ticketType);
+            if (ticketType.equals("Vé ngày")) {
+                txtHSD.setText("HSD: 24h kể từ thời điểm kích hoạt");
+            } else if (ticketType.equals("Vé 3 ngày")) {
+                txtHSD.setText("HSD: 72h kể từ thời điểm kích hoạt");
+            } else if (ticketType.equals("Vé tháng")) {
+                txtHSD.setText("HSD: 30 ngày kể từ thời điểm kích hoạt");
+            }
+
+            btnPickStartDate.setEnabled(true);
             btnPickStartDate.setOnClickListener(v -> showDatePicker());
         }
 
+        btnBack.setOnClickListener(v -> {
+            Intent backIntent = new Intent(ConfirmTicketActivity.this, SelectTicketTypeActivity.class);
+            backIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(backIntent);
+            finish();
+        });
+
         btnConfirm.setOnClickListener(v -> {
-            if (!ticketType.equals("Vé lượt") && startDateStr.isEmpty()) {
-                Toast.makeText(this, "Vui lòng chọn ngày bắt đầu", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Lưu thông tin vé vào database
             saveTicketToDatabase();
-
-            // Xác nhận thành công và quay lại
             Toast.makeText(this, "Đặt vé thành công!", Toast.LENGTH_LONG).show();
-            finish(); // Quay về trang trước hoặc Main
+            finish();
         });
     }
 
@@ -81,18 +110,41 @@ public class ConfirmTicketActivity extends AppCompatActivity {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
 
             startDateStr = sdf.format(selected.getTime());
-            txtStartDate.setText(startDateStr);
 
-            Calendar end = (Calendar) selected.clone();
-            switch (ticketType) {
-                case "Vé tuần":
-                    end.add(Calendar.DAY_OF_MONTH, 6); break; // 7 ngày tính từ ngày bắt đầu
-                case "Vé tháng":
-                    end.add(Calendar.DAY_OF_MONTH, 29); break; // 30 ngày tính từ ngày bắt đầu
-                default: break;
+            Calendar end = (Calendar) selected.clone();  // Clone ngày bắt đầu
+
+            if (ticketType != null) {
+                switch (ticketType) {
+                    case "Vé lượt":
+                        txtTicketInfo.setText("Loại vé: Vé lượt\nHSD: Dùng 1 lần, theo tuyến đã chọn");
+                        end = null; // Không cần ngày kết thúc
+                        break;
+
+                    case "Vé ngày":
+                        txtTicketInfo.setText("Loại vé: Vé ngày\nHSD: 24h kể từ thời điểm kích hoạt");
+                        end.add(Calendar.DAY_OF_MONTH, 1);
+                        break;
+
+                    case "Vé 3 ngày":
+                        txtTicketInfo.setText("Loại vé: Vé 3 ngày\nHSD: 72h kể từ thời điểm kích hoạt");
+                        end.add(Calendar.DAY_OF_MONTH, 3);
+                        break;
+
+                    case "Vé tháng":
+                        txtTicketInfo.setText("Loại vé: Vé tháng\nHSD: 30 ngày kể từ thời điểm kích hoạt");
+                        end.add(Calendar.DAY_OF_MONTH, 30);
+                        break;
+                }
             }
-            endDateStr = sdf.format(end.getTime());
-            txtEndDate.setText("Ngày kết thúc: " + endDateStr);
+
+            txtStartDate.setText("Ngày bắt đầu: " + startDateStr);
+            if (end != null) {
+                endDateStr = sdf.format(end.getTime());
+                txtEndDate.setText("Ngày kết thúc: " + endDateStr);
+            } else {
+                txtEndDate.setText("Ngày kết thúc: Không áp dụng");
+            }
+
         }, y, m, d).show();
     }
 
@@ -100,8 +152,7 @@ public class ConfirmTicketActivity extends AppCompatActivity {
         MyDataBaseHelper dbHelper = new MyDataBaseHelper(this);
         ContentValues values = new ContentValues();
 
-        // Lấy user_id từ SharedPreferences hoặc Intent
-        int userId = 1;  // Giả sử là ID của người dùng hiện tại (có thể lấy từ đăng nhập hoặc session)
+        int userId = 1;  // mặc định user ID
 
         values.put("ticket_type", ticketType);
         values.put("price", price);
@@ -112,5 +163,10 @@ public class ConfirmTicketActivity extends AppCompatActivity {
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         db.insert("Tickets", null, values);
         db.close();
+        if (ticketType.equals("Vé lượt")) {
+            values.put("from_station", from);
+            values.put("to_station", to);
+            values.put("travel_date", date);
+        }
     }
 }

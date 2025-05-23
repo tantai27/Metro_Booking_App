@@ -23,7 +23,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <!-- Các Activity còn lại -->
         <activity android:name=".LoginActivity" android:exported="true" />
         <activity android:name=".MainActivity" android:exported="true" />
@@ -36,6 +35,8 @@
         <activity android:name=".PrintDatabaseActivity" />
         <activity android:name=".ForgotPasswordActivity" />
         <activity android:name=".EditProfileActivity" />
+        <activity android:name=".ChangePasswordActivity" />
+
 
     </application>
 </manifest>

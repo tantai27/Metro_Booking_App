@@ -1,0 +1,22 @@
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <item>
+        <shape android:shape="rectangle">
+            <solid android:color="@android:color/white" />
+            <corners android:radius="24dp" />
+        </shape>
+    </item>
+    <!-- Left notch -->
+    <item android:left="-12dp" android:top="@dimen/cardview_default_radius">
+        <shape android:shape="oval">
+            <size android:width="24dp" android:height="24dp" />
+            <solid android:color="#1E1E1E" />
+        </shape>
+    </item>
+    <!-- Right notch -->
+    <item android:right="-12dp" android:top="@dimen/cardview_default_radius">
+        <shape android:shape="oval">
+            <size android:width="24dp" android:height="24dp" />
+            <solid android:color="#1E1E1E" />
+        </shape>
+    </item>
+</layer-list>
